@@ -16,10 +16,7 @@ TIME_LIMIT = 20
 MAX_WIDTH = 450
 MAX_HEIGHT = 650
 
-st.markdown(
-    "<p style='color:#888;'>© 2026 Thuykongu</p>",
-    unsafe_allow_html=True
-)
+st.set_page_config(page_title="Chạy trạm giải phẫu", layout="wide")
 
 
 def normalize(text):
@@ -87,6 +84,19 @@ def current_question():
     return questions.iloc[st.session_state.order[st.session_state.index]]
 
 
+def footer():
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style="text-align:center; color:gray; font-size:14px;">
+            © 2026 Thuykongu<br>
+            Contact: kakaka1549@gmail.com
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 if "started" not in st.session_state:
     reset_home()
 
@@ -102,10 +112,10 @@ if not st.session_state.started:
         start_exam()
         st.rerun()
 
+    footer()
     st.stop()
 
 
-# refresh mỗi giây để đếm ngược
 st_autorefresh(interval=1000, key="timer_refresh")
 
 q = current_question()
@@ -130,13 +140,14 @@ if q is None:
         reset_home()
         st.rerun()
 
+    footer()
     st.stop()
 
 
 elapsed = int(time.time() - st.session_state.start_time)
 time_left = max(0, TIME_LIMIT - elapsed)
 
-# Hết giờ mà chưa nộp thì tính sai
+
 if time_left <= 0 and not st.session_state.answered:
     st.session_state.answered = True
     st.session_state.show_answer = True
@@ -228,3 +239,6 @@ with col2:
     if st.button("Dừng bài"):
         st.session_state.index = len(st.session_state.order)
         st.rerun()
+
+
+footer()
