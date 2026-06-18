@@ -38,44 +38,39 @@ def make_order():
     return random.sample(range(len(questions)), min(QUESTION_COUNT, len(questions)))
 
 
-def clear_answer():
-    if "user_answer" in st.session_state:
-        del st.session_state.user_answer
-
-
 def start_exam():
     st.session_state.started = True
     st.session_state.order = make_order()
     st.session_state.index = 0
+    st.session_state.question_id = 0
     st.session_state.correct = 0
     st.session_state.wrong = 0
     st.session_state.answered = False
     st.session_state.show_answer = False
     st.session_state.result = ""
     st.session_state.start_time = time.time()
-    clear_answer()
 
 
 def reset_home():
     st.session_state.started = False
     st.session_state.order = []
     st.session_state.index = 0
+    st.session_state.question_id = 0
     st.session_state.correct = 0
     st.session_state.wrong = 0
     st.session_state.answered = False
     st.session_state.show_answer = False
     st.session_state.result = ""
     st.session_state.start_time = time.time()
-    clear_answer()
 
 
 def next_question():
     st.session_state.index += 1
+    st.session_state.question_id += 1
     st.session_state.answered = False
     st.session_state.show_answer = False
     st.session_state.result = ""
     st.session_state.start_time = time.time()
-    clear_answer()
 
 
 def current_question():
@@ -181,10 +176,13 @@ with col2:
     st.metric("Thời gian còn lại", f"{time_left}s")
     st.write(f"Câu: {st.session_state.index + 1}/{len(st.session_state.order)}")
 
-    with st.form("answer_form", clear_on_submit=False):
+    answer_key = f"user_answer_{st.session_state.question_id}"
+    form_key = f"answer_form_{st.session_state.question_id}"
+
+    with st.form(form_key, clear_on_submit=False):
         user_answer = st.text_input(
             "Nhập đáp án",
-            key="user_answer",
+            key=answer_key,
             disabled=st.session_state.answered
         )
 
